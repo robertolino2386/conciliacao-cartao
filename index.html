@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Conciliação Cartão Cliente - Configurações</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+:root{
+  --azul-escuro:#003b73;
+  --azul:#005baa;
+  --azul-vivo:#0074d9;
+  --azul-claro:#dbeeff;
+  --azul-fundo:#eaf4ff;
+  --texto:#1f2937;
+  --borda:#b8d9f7;
+  --branco:#ffffff;
+  --sombra:#003b7324;
+  --erro:#dc2626;
+  --ok:#075985;
+  --alerta:#92400e;
+}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--azul-fundo);color:var(--texto)}
+.oculta{display:none!important}
+.tela-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,var(--azul-escuro),var(--azul-vivo))}
+.login-card{width:100%;max-width:430px;background:var(--branco);border-radius:22px;padding:32px;box-shadow:0 18px 45px rgba(0,0,0,.22)}
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo .marca{display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:20px;background:var(--azul-claro);color:var(--azul-escuro);font-size:32px;font-weight:bold;margin-bottom:14px}
+.login-logo h1{margin:0;color:var(--azul-escuro);font-size:25px}.login-logo p{margin:8px 0 0;color:#64748b;font-size:14px}.login-form{display:flex;flex-direction:column;gap:16px}
+header{background:linear-gradient(135deg,var(--azul-escuro),var(--azul-vivo));color:white;padding:24px 20px;box-shadow:0 4px 14px #003b7326}.topo{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1280px;margin:0 auto}.topo h1{margin:0 0 6px;font-size:28px}.topo p{margin:0;color:var(--azul-claro)}.usuario{font-size:13px;color:var(--azul-claro);margin-bottom:8px;text-align:right}main{padding:20px;max-width:1280px;margin:0 auto}
+.card,.box{background:white;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #003b7318;border:1px solid #d7eaff}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;align-items:end}.grid-full{grid-column:1/-1}.cards-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-bottom:16px}.menu-card{cursor:pointer;transition:.2s}.menu-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--sombra)}.menu-card h3{margin:0 0 8px;color:var(--azul-escuro)}.menu-card p{margin:0;color:#64748b;font-size:14px;line-height:1.4}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:bold;color:var(--azul-escuro)}input,select,button,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--borda);font-size:14px}textarea{min-height:110px;resize:vertical}input:focus,select:focus,textarea:focus{outline:2px solid #93c5fd;border-color:var(--azul-vivo)}button{background:var(--azul);color:white;font-weight:bold;cursor:pointer;border:0;transition:.2s}button:hover{background:var(--azul-vivo);transform:translateY(-1px)}button:disabled{opacity:.65;cursor:not-allowed;transform:none}.btn-sair{width:auto;padding:10px 16px;background:white;color:var(--azul-escuro);border:1px solid var(--azul-claro)}.btn-secundario{background:#e0f2fe!important;color:var(--azul-escuro)!important;border:1px solid var(--borda)!important}.btn-alerta{background:#fef3c7!important;color:#92400e!important;border:1px solid #fde68a!important}.btn-mini{width:auto;padding:8px 10px;font-size:12px;margin-right:6px}.acoes{display:flex;gap:10px;grid-column:1/-1;flex-wrap:wrap}.acoes button{width:auto;min-width:180px}.checks{display:flex;flex-direction:row;gap:14px;flex-wrap:wrap;padding:10px;border:1px solid var(--borda);border-radius:10px;background:#f8fbff}.checks label{display:flex;flex-direction:row;align-items:center;gap:6px;font-weight:normal;color:#334155}.checks input{width:auto}
+.erro{display:none;color:var(--erro);font-size:13px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:10px}.mensagem{display:none;border-radius:10px;padding:10px;margin-top:12px;font-size:13px}.mensagem.ok{color:var(--ok);background:#e0f2fe;border:1px solid #bae6fd}.mensagem.erro-msg{color:var(--erro);background:#fee2e2;border:1px solid #fecaca}.pagina{display:none}.pagina.ativa{display:block}.tabela-wrap{width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse;background:white;min-width:1120px}th,td{border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:13px;text-align:left;vertical-align:top}th{background:var(--azul-claro);color:var(--azul-escuro)}.campo-inativo{width:auto}.status-ativo{color:#15803d;font-weight:bold}.status-inativo{color:#b45309;font-weight:bold}.obs-cell{max-width:260px;white-space:normal}.barra-lista{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.carregando{font-size:13px;color:#64748b;margin:8px 0 0}
+@media(max-width:700px){.login-card{padding:24px}.topo{align-items:flex-start;flex-direction:column}.usuario{text-align:left}.btn-sair{width:100%}.acoes{flex-direction:column}.acoes button{width:100%}main{padding:14px}.topo h1{font-size:24px}table{min-width:1050px}}
+</style>
+</head>
+<body>
+<section id="telaLogin" class="tela-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="marca">C</div>
+      <h1>Conciliação Cartão Cliente</h1>
+      <p>Acesse para cadastrar clientes e colaboradores.</p>
+    </div>
+    <form id="formLogin" class="login-form">
+      <label>Login / E-mail<input id="login" type="email" autocomplete="username" required /></label>
+      <label>Senha<input id="senha" type="password" autocomplete="current-password" required /></label>
+      <div id="erroLogin" class="erro">Login ou senha inválidos. Verifique o cadastro no Firebase.</div>
+      <button type="submit">Acessar Sistema</button>
+    </form>
+  </div>
+</section>
+<section id="sistema" class="oculta">
+  <header>
+    <div class="topo">
+      <div>
+        <h1>Conciliação Cartão Cliente</h1>
+        <p>Cadastro base integrado ao Google Sheets.</p>
+      </div>
+      <div>
+        <div class="usuario">Usuário: <span id="usuarioNome"></span></div>
+        <button id="btnSair" class="btn-sair" type="button">Sair</button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section id="paginaMenu" class="pagina ativa">
+      <div class="cards-menu">
+        <div class="card menu-card" onclick="abrirPagina('cliente')">
+          <h3>Cadastrar Cliente</h3>
+          <p>Inclua, edite e inative clientes na base do Google Sheets.</p>
+        </div>
+        <div class="card menu-card" onclick="abrirPagina('colaborador')">
+          <h3>Cadastrar Colaborador</h3>
+          <p>Inclua colaboradores e marque quem estiver inativo.</p>
+        </div>
+      </div>
+    </section>
+    <section id="paginaCliente" class="pagina">
+      <div class="box">
+        <h2 id="tituloCliente">Cadastrar Cliente</h2>
+        <form id="formCliente" class="grid">
+          <label>Nome Cliente<input id="clienteNome" required maxlength="120" /></label>
+          <label>CNPJ/CPF<input id="clienteDocumento" required maxlength="20" /></label>
+          <label>Grupo<input id="clienteGrupo" maxlength="120" /></label>
+          <label>BKO Cliente<input id="clienteBko" maxlength="120" /></label>
+          <label>BKO Grupo<input id="clienteBkoGrupo" maxlength="120" /></label>
+          <label>Data de Corte<select id="clienteCorte" required></select></label>
+          <label>VCN<select id="clienteVcn"><option>Sim</option><option>Não</option></select></label>
+          <label>Nota Fiscal<select id="clienteNota"><option>Sim</option><option>Não</option></select></label>
+          <label>NF deve ser no<select id="clienteNfDocumento"><option>CNPJ</option><option>CPF</option></select></label>
+          <label>Extrato é obrigatório?<select id="clienteExtrato"><option>Sim</option><option>Não</option></select></label>
+          <label>Aceita Extras?<select id="clienteExtras"><option>Sim</option><option>Não</option></select></label>
+          <label>Portal<input id="clientePortal" maxlength="20" placeholder="Até 20 caracteres" /></label>
+          <label class="grid-full">OBT
+            <div class="checks">
+              <label><input type="checkbox" name="clienteObt" value="Argo" /> Argo</label>
+              <label><input type="checkbox" name="clienteObt" value="Reserve" /> Reserve</label>
+              <label><input type="checkbox" name="clienteObt" value="Lemontech" /> Lemontech</label>
+            </div>
+          </label>
+          <label class="grid-full">Observação<textarea id="clienteObservacao" maxlength="1000" placeholder="Até 1000 caracteres"></textarea></label>
+          <div class="acoes">
+            <button id="btnSalvarCliente" type="submit">Salvar Cliente</button>
+            <button id="btnCancelarCliente" type="button" class="btn-alerta oculta" onclick="cancelarEdicaoCliente()">Cancelar Edição</button>
+            <button type="button" class="btn-secundario" onclick="abrirPagina('menu')">Menu</button>
+          </div>
+        </form>
+        <div id="msgCliente" class="mensagem ok"></div>
+      </div>
+      <div class="box">
+        <div class="barra-lista">
+          <h2>Clientes Cadastrados</h2>
+          <button type="button" class="btn-secundario btn-mini" onclick="carregarClientes()">Atualizar Lista</button>
+        </div>
+        <div id="statusClientes" class="carregando"></div>
+        <div class="tabela-wrap">
+          <table>
+            <thead>
+              <tr><th>Inativo?</th><th>Status</th><th>Ações</th><th>Nome</th><th>CNPJ/CPF</th><th>Grupo</th><th>BKO Cliente</th><th>BKO Grupo</th><th>Corte</th><th>VCN</th><th>Nota Fiscal</th><th>NF no</th><th>Extrato</th><th>Extras</th><th>Portal</th><th>OBT</th><th>Observação</th></tr>
+            </thead>
+            <tbody id="listaClientes"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section id="paginaColaborador" class="pagina">
+      <div class="box">
+        <h2 id="tituloColaborador">Cadastrar Colaborador</h2>
+        <form id="formColaborador" class="grid">
+          <label>Nome<input id="colaboradorNome" required maxlength="120" /></label>
+          <label>E-mail<input id="colaboradorEmail" type="email" required maxlength="160" /></label>
+          <div class="acoes">
+            <button id="btnSalvarColaborador" type="submit">Salvar Colaborador</button>
+            <button id="btnCancelarColaborador" type="button" class="btn-alerta oculta" onclick="cancelarEdicaoColaborador()">Cancelar Edição</button>
+            <button type="button" class="btn-secundario" onclick="abrirPagina('menu')">Menu</button>
+          </div>
+        </form>
+        <div id="msgColaborador" class="mensagem ok"></div>
+      </div>
+      <div class="box">
+        <div class="barra-lista">
+          <h2>Colaboradores Cadastrados</h2>
+          <button type="button" class="btn-secundario btn-mini" onclick="carregarColaboradores()">Atualizar Lista</button>
+        </div>
+        <div id="statusColaboradores" class="carregando"></div>
+        <div class="tabela-wrap">
+          <table style="min-width:760px">
+            <thead><tr><th>Inativo?</th><th>Status</th><th>Ações</th><th>Nome</th><th>E-mail</th></tr></thead>
+            <tbody id="listaColaboradores"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</section>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAPS3MW2qHnOB3J6e693dg6xlpuCCRaNW0",
+  authDomain: "conciliacaocartaocliente.firebaseapp.com",
+  projectId: "conciliacaocartaocliente",
+  storageBucket: "conciliacaocartaocliente.firebasestorage.app",
+  messagingSenderId: "717279792089",
+  appId: "1:717279792089:web:6a6f01aaeedd85c0f227c8",
+  measurementId: "G-C40Z6BY85B"
+};
+
+const API_URL = "https://script.google.com/macros/s/AKfycbweqA7oLff3aseBcfIfQzcO94Va9CPhgSvnwsDgbBenUPMgVz8OmenREfhiJSDRbcja/exec";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const telaLogin = document.getElementById("telaLogin");
+const sistema = document.getElementById("sistema");
+const formLogin = document.getElementById("formLogin");
+const login = document.getElementById("login");
+const senha = document.getElementById("senha");
+const erroLogin = document.getElementById("erroLogin");
+const usuarioNome = document.getElementById("usuarioNome");
+const btnSair = document.getElementById("btnSair");
+let clientes = [];
+let colaboradores = [];
+let clienteEditandoId = null;
+let colaboradorEditandoId = null;
+
+for(let i=1;i<=31;i++){
+  const opt = document.createElement("option");
+  opt.value = String(i).padStart(2,"0");
+  opt.textContent = String(i).padStart(2,"0");
+  document.getElementById("clienteCorte").appendChild(opt);
+}
+
+async function api(acao, dados = {}){
+  const resposta = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ acao, ...dados })
+  });
+  const texto = await resposta.text();
+  try{
+    return JSON.parse(texto);
+  }catch(e){
+    throw new Error("A API respondeu em formato inesperado. Verifique a implantação do Apps Script.");
+  }
+}
+
+formLogin.addEventListener("submit", async e => {
+  e.preventDefault();
+  erroLogin.style.display = "none";
+  try{
+    await signInWithEmailAndPassword(auth, login.value.trim(), senha.value.trim());
+  }catch(error){
+    erroLogin.style.display = "block";
+  }
+});
+
+btnSair.addEventListener("click", async () => { await signOut(auth); });
+
+onAuthStateChanged(auth, async user => {
+  if(user){
+    usuarioNome.textContent = user.email;
+    telaLogin.classList.add("oculta");
+    sistema.classList.remove("oculta");
+    abrirPagina("menu");
+    await carregarTudo();
+  }else{
+    usuarioNome.textContent = "";
+    sistema.classList.add("oculta");
+    telaLogin.classList.remove("oculta");
+    login.value = "";
+    senha.value = "";
+  }
+});
+
+window.abrirPagina = function(pagina){
+  document.querySelectorAll(".pagina").forEach(p => p.classList.remove("ativa"));
+  if(pagina === "cliente") document.getElementById("paginaCliente").classList.add("ativa");
+  else if(pagina === "colaborador") document.getElementById("paginaColaborador").classList.add("ativa");
+  else document.getElementById("paginaMenu").classList.add("ativa");
+};
+
+async function carregarTudo(){
+  await Promise.all([carregarClientes(), carregarColaboradores()]);
+}
+
+window.carregarClientes = async function(){
+  const status = document.getElementById("statusClientes");
+  status.textContent = "Carregando clientes do Google Sheets...";
+  try{
+    const ret = await api("listarClientes");
+    if(!ret.sucesso) throw new Error(ret.mensagem || "Erro ao listar clientes.");
+    clientes = ret.clientes || [];
+    atualizarListaClientes();
+    status.textContent = `${clientes.length} cliente(s) carregado(s).`;
+  }catch(erro){
+    status.textContent = "Erro ao carregar clientes: " + erro.message;
+  }
+};
+
+window.carregarColaboradores = async function(){
+  const status = document.getElementById("statusColaboradores");
+  status.textContent = "Carregando colaboradores do Google Sheets...";
+  try{
+    const ret = await api("listarColaboradores");
+    if(!ret.sucesso) throw new Error(ret.mensagem || "Erro ao listar colaboradores.");
+    colaboradores = ret.colaboradores || [];
+    atualizarListaColaboradores();
+    status.textContent = `${colaboradores.length} colaborador(es) carregado(s).`;
+  }catch(erro){
+    status.textContent = "Erro ao carregar colaboradores: " + erro.message;
+  }
+};
+
+function obterObt(){
+  return Array.from(document.querySelectorAll('input[name="clienteObt"]:checked')).map(item => item.value).join(", ");
+}
+
+function marcarObt(valor){
+  const lista = String(valor || "").split(",").map(v => v.trim());
+  document.querySelectorAll('input[name="clienteObt"]').forEach(input => input.checked = lista.includes(input.value));
+}
+
+function dadosClienteFormulario(inativoAtual = "Não"){
+  return {
+    nomeCliente: document.getElementById("clienteNome").value.trim(),
+    cnpjCpf: document.getElementById("clienteDocumento").value.trim(),
+    grupo: document.getElementById("clienteGrupo").value.trim(),
+    bkoCliente: document.getElementById("clienteBko").value.trim(),
+    bkoGrupo: document.getElementById("clienteBkoGrupo").value.trim(),
+    dataCorte: document.getElementById("clienteCorte").value,
+    vcn: document.getElementById("clienteVcn").value,
+    notaFiscal: document.getElementById("clienteNota").value,
+    nfDocumento: document.getElementById("clienteNfDocumento").value,
+    extratoObrigatorio: document.getElementById("clienteExtrato").value,
+    aceitaExtras: document.getElementById("clienteExtras").value,
+    portal: document.getElementById("clientePortal").value.trim(),
+    obt: obterObt(),
+    observacao: document.getElementById("clienteObservacao").value.trim(),
+    inativo: inativoAtual || "Não"
+  };
+}
+
+function preencherCliente(c){
+  document.getElementById("clienteNome").value = c.nomeCliente || "";
+  document.getElementById("clienteDocumento").value = c.cnpjCpf || "";
+  document.getElementById("clienteGrupo").value = c.grupo || "";
+  document.getElementById("clienteBko").value = c.bkoCliente || "";
+  document.getElementById("clienteBkoGrupo").value = c.bkoGrupo || "";
+  document.getElementById("clienteCorte").value = c.dataCorte || "01";
+  document.getElementById("clienteVcn").value = c.vcn || "Sim";
+  document.getElementById("clienteNota").value = c.notaFiscal || "Sim";
+  document.getElementById("clienteNfDocumento").value = c.nfDocumento || "CNPJ";
+  document.getElementById("clienteExtrato").value = c.extratoObrigatorio || "Sim";
+  document.getElementById("clienteExtras").value = c.aceitaExtras || "Sim";
+  document.getElementById("clientePortal").value = c.portal || "";
+  marcarObt(c.obt);
+  document.getElementById("clienteObservacao").value = c.observacao || "";
+}
+
+function limparFormCliente(){
+  document.getElementById("formCliente").reset();
+  marcarObt("");
+  clienteEditandoId = null;
+  document.getElementById("tituloCliente").textContent = "Cadastrar Cliente";
+  document.getElementById("btnSalvarCliente").textContent = "Salvar Cliente";
+  document.getElementById("btnCancelarCliente").classList.add("oculta");
+}
+
+window.cancelarEdicaoCliente = limparFormCliente;
+
+document.getElementById("formCliente").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("btnSalvarCliente");
+  btn.disabled = true;
+  try{
+    let ret;
+    if(clienteEditandoId){
+      const atual = clientes.find(c => String(c.id) === String(clienteEditandoId));
+      ret = await api("atualizarCliente", { id: clienteEditandoId, ...dadosClienteFormulario(atual?.inativo || "Não") });
+    }else{
+      ret = await api("cadastrarCliente", dadosClienteFormulario("Não"));
+    }
+    if(!ret.sucesso) throw new Error(ret.mensagem || "Erro ao salvar cliente.");
+    mostrarMensagem("msgCliente", ret.mensagem || "Cliente salvo com sucesso.", true);
+    limparFormCliente();
+    await carregarClientes();
+  }catch(erro){
+    mostrarMensagem("msgCliente", erro.message, false);
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+window.editarCliente = function(id){
+  const cliente = clientes.find(c => String(c.id) === String(id));
+  if(!cliente) return;
+  clienteEditandoId = id;
+  preencherCliente(cliente);
+  document.getElementById("tituloCliente").textContent = "Editar Cliente";
+  document.getElementById("btnSalvarCliente").textContent = "Atualizar Cliente";
+  document.getElementById("btnCancelarCliente").classList.remove("oculta");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+window.alterarStatusCliente = async function(id, checked){
+  const cliente = clientes.find(c => String(c.id) === String(id));
+  if(!cliente) return;
+  try{
+    const ret = await api("atualizarCliente", { ...cliente, inativo: checked ? "Sim" : "Não" });
+    if(!ret.sucesso) throw new Error(ret.mensagem || "Erro ao atualizar status.");
+    await carregarClientes();
+  }catch(erro){
+    alert("Erro ao atualizar cliente: " + erro.message);
+    await carregarClientes();
+  }
+};
+
+function dadosColaboradorFormulario(inativoAtual = "Não"){
+  return {
+    nome: document.getElementById("colaboradorNome").value.trim(),
+    email: document.getElementById("colaboradorEmail").value.trim(),
+    inativo: inativoAtual || "Não"
+  };
+}
+
+function limparFormColaborador(){
+  document.getElementById("formColaborador").reset();
+  colaboradorEditandoId = null;
+  document.getElementById("tituloColaborador").textContent = "Cadastrar Colaborador";
+  document.getElementById("btnSalvarColaborador").textContent = "Salvar Colaborador";
+  document.getElementById("btnCancelarColaborador").classList.add("oculta");
+}
+
+window.cancelarEdicaoColaborador = limparFormColaborador;
+
+document.getElementById("formColaborador").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("btnSalvarColaborador");
+  btn.disabled = true;
+  try{
+    let ret;
+    if(colaboradorEditandoId){
+      const atual = colaboradores.find(c => String(c.id) === String(colaboradorEditandoId));
+      ret = await api("atualizarColaborador", { id: colaboradorEditandoId, ...dadosColaboradorFormulario(atual?.inativo || "Não") });
+    }else{
+      ret = await api("cadastrarColaborador", dadosColaboradorFormulario("Não"));
+    }
+    if(!ret.sucesso) throw new Error(ret.mensagem || "Erro ao salvar colaborador.");
+    mostrarMensagem("msgColaborador", ret.mensagem || "Colaborador salvo com sucesso.", true);
+    limparFormColaborador();
+    await carregarColaboradores();
+  }catch(erro){
+    mostrarMensagem("msgColaborador", erro.message, false);
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+window.editarColaborador = function(id){
+  const colaborador = colaboradores.find(c => String(c.id) === String(id));
+  if(!colaborador) return;
+  colaboradorEditandoId = id;
+  document.getElementById("colaboradorNome").value = colaborador.nome || "";
+  document.getElementById("colaboradorEmail").value = colaborador.email || "";
+  document.getElementById("tituloColaborador").textContent = "Editar Colaborador";
+  document.getElementById("btnSalvarColaborador").textContent = "Atualizar Colaborador";
+  document.getElementById("btnCancelarColaborador").classList.remove("oculta");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+window.alterarStatusColaborador = async function(id, checked){
+  const colaborador = colaboradores.find(c => String(c.id) === String(id));
+  if(!colaborador) return;
+  try{
+    const ret = await api("atualizarColaborador", { ...colaborador, inativo: checked ? "Sim" : "Não" });
+    if(!ret.sucesso) throw new Error(ret.mensagem || "Erro ao atualizar status.");
+    await carregarColaboradores();
+  }catch(erro){
+    alert("Erro ao atualizar colaborador: " + erro.message);
+    await carregarColaboradores();
+  }
+};
+
+function atualizarListaClientes(){
+  document.getElementById("listaClientes").innerHTML = clientes.map(c => {
+    const inativo = String(c.inativo || "Não").toLowerCase() === "sim" || c.inativo === true;
+    return `<tr>
+      <td><input class="campo-inativo" type="checkbox" ${inativo ? "checked" : ""} onchange="alterarStatusCliente('${escAttr(c.id)}', this.checked)"></td>
+      <td class="${inativo ? "status-inativo" : "status-ativo"}">${inativo ? "Inativo" : "Ativo"}</td>
+      <td><button type="button" class="btn-secundario btn-mini" onclick="editarCliente('${escAttr(c.id)}')">Editar</button></td>
+      <td>${esc(c.nomeCliente)}</td><td>${esc(c.cnpjCpf)}</td><td>${esc(c.grupo)}</td><td>${esc(c.bkoCliente)}</td><td>${esc(c.bkoGrupo)}</td><td>${esc(c.dataCorte)}</td><td>${esc(c.vcn)}</td><td>${esc(c.notaFiscal)}</td><td>${esc(c.nfDocumento)}</td><td>${esc(c.extratoObrigatorio)}</td><td>${esc(c.aceitaExtras)}</td><td>${esc(c.portal)}</td><td>${esc(c.obt)}</td><td class="obs-cell">${esc(c.observacao)}</td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="17">Nenhum cliente cadastrado.</td></tr>`;
+}
+
+function atualizarListaColaboradores(){
+  document.getElementById("listaColaboradores").innerHTML = colaboradores.map(c => {
+    const inativo = String(c.inativo || "Não").toLowerCase() === "sim" || c.inativo === true;
+    return `<tr>
+      <td><input class="campo-inativo" type="checkbox" ${inativo ? "checked" : ""} onchange="alterarStatusColaborador('${escAttr(c.id)}', this.checked)"></td>
+      <td class="${inativo ? "status-inativo" : "status-ativo"}">${inativo ? "Inativo" : "Ativo"}</td>
+      <td><button type="button" class="btn-secundario btn-mini" onclick="editarColaborador('${escAttr(c.id)}')">Editar</button></td>
+      <td>${esc(c.nome)}</td><td>${esc(c.email)}</td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="5">Nenhum colaborador cadastrado.</td></tr>`;
+}
+
+function mostrarMensagem(id, texto, ok){
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = ok ? "mensagem ok" : "mensagem erro-msg";
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 3500);
+}
+
+function esc(valor){
+  return String(valor ?? "").replace(/[&<>'"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));
+}
+function escAttr(valor){
+  return String(valor ?? "").replace(/[\\'\"]/g, "");
+}
+</script>
+</body>
+</html>
