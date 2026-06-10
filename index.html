@@ -121,7 +121,22 @@ button:disabled{opacity:.65;cursor:not-allowed;transform:none}.btn-secundario{ba
             <label>NF deve ser no<select id="clienteNfDocumento"><option>CNPJ</option><option>CPF</option></select></label>
             <label>Extrato é obrigatório?<select id="clienteExtrato"><option>Sim</option><option>Não</option></select></label>
             <label>Aceita Extras?<select id="clienteExtras"><option>Sim</option><option>Não</option></select></label>
-            <label>Portal<input id="clientePortal" maxlength="20" placeholder="Até 20 caracteres" /></label>
+            <label>Portal<select id="clientePortal" required>
+              <option value="">Selecione</option>
+              <option>B2B PAY</option>
+              <option>BTB</option>
+              <option>EDINET</option>
+              <option>EDINET (CIP)</option>
+              <option>E-MAIL</option>
+              <option>FATURADO</option>
+              <option>ITAÚ</option>
+              <option>SANTANDER</option>
+              <option>SITEL</option>
+              <option>SMARTDATA</option>
+            </select></label>
+            <label>Final do Cartão<input id="clienteFinalCartao" type="text" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="Ex: 8216" /></label>
+            <label>Apelido Cartão<input id="clienteApelidoCartao" maxlength="80" placeholder="Identificação interna" /></label>
+            <label>Tipo Cartão<select id="clienteTipoCartao" required><option>Hotel</option><option>Aéreo</option><option>Ambos</option></select></label>
             <label class="grid-full">OBT
               <div class="checks">
                 <label><input type="checkbox" name="clienteObt" value="Argo" /> Argo</label>
@@ -146,7 +161,7 @@ button:disabled{opacity:.65;cursor:not-allowed;transform:none}.btn-secundario{ba
           <div class="tabela-wrap">
             <table>
               <thead>
-                <tr><th>Inativo?</th><th>Status</th><th>Ações</th><th>Nome</th><th>CNPJ/CPF</th><th>Grupo</th><th>BKO Cliente</th><th>BKO Grupo</th><th>Corte</th><th>VCN</th><th>Nota Fiscal</th><th>NF no</th><th>Extrato</th><th>Extras</th><th>Portal</th><th>OBT</th><th>Observação</th></tr>
+                <tr><th>Inativo?</th><th>Status</th><th>Ações</th><th>Nome</th><th>CNPJ/CPF</th><th>Grupo</th><th>BKO Cliente</th><th>BKO Grupo</th><th>Corte</th><th>VCN</th><th>Nota Fiscal</th><th>NF no</th><th>Extrato</th><th>Extras</th><th>Portal</th><th>Final Cartão</th><th>Apelido Cartão</th><th>Tipo Cartão</th><th>OBT</th><th>Observação</th></tr>
               </thead>
               <tbody id="listaClientes"></tbody>
             </table>
@@ -298,7 +313,10 @@ function dadosClienteFormulario(){
     nfDocumento: $("clienteNfDocumento").value,
     extratoObrigatorio: $("clienteExtrato").value,
     aceitaExtras: $("clienteExtras").value,
-    portal: $("clientePortal").value.trim(),
+    portal: $("clientePortal").value,
+    finalCartao: $("clienteFinalCartao").value.trim(),
+    apelidoCartao: $("clienteApelidoCartao").value.trim(),
+    tipoCartao: $("clienteTipoCartao").value,
     obt: obterObt(),
     observacao: $("clienteObservacao").value.trim(),
     inativo: "Não"
@@ -312,6 +330,9 @@ $("formCliente").addEventListener("submit", async e => {
   botao.textContent = clienteEditandoId ? "Atualizando..." : "Salvando...";
   try{
     const dados = dadosClienteFormulario();
+    if(dados.finalCartao && !/^\d{4}$/.test(dados.finalCartao)){
+      throw new Error("O Final do Cartão deve conter exatamente 4 números.");
+    }
     const res = await api(clienteEditandoId ? "atualizarCliente" : "cadastrarCliente", dados);
     if(!res.sucesso) throw new Error(res.mensagem || "Erro ao salvar cliente.");
     mostrarMensagem("msgCliente", res.mensagem || "Cliente salvo com sucesso.");
@@ -343,7 +364,7 @@ function renderClientes(){
       <td><input class="campo-inativo" type="checkbox" ${c.inativo === "Sim" ? "checked" : ""} onchange="alterarInativoCliente('${c.id}', this.checked)" /></td>
       <td class="${c.inativo === "Sim" ? "status-inativo" : "status-ativo"}">${c.inativo === "Sim" ? "Inativo" : "Ativo"}</td>
       <td><button class="btn-mini" type="button" onclick="editarCliente('${c.id}')">Editar</button></td>
-      <td>${c.nomeCliente || ""}</td><td>${c.cnpjCpf || ""}</td><td>${c.grupo || ""}</td><td>${c.bkoCliente || ""}</td><td>${c.bkoGrupo || ""}</td><td>${c.dataCorte || ""}</td><td>${c.vcn || ""}</td><td>${c.notaFiscal || ""}</td><td>${c.nfDocumento || ""}</td><td>${c.extratoObrigatorio || ""}</td><td>${c.aceitaExtras || ""}</td><td>${c.portal || ""}</td><td>${c.obt || ""}</td><td class="obs-cell">${c.observacao || ""}</td>
+      <td>${c.nomeCliente || ""}</td><td>${c.cnpjCpf || ""}</td><td>${c.grupo || ""}</td><td>${c.bkoCliente || ""}</td><td>${c.bkoGrupo || ""}</td><td>${c.dataCorte || ""}</td><td>${c.vcn || ""}</td><td>${c.notaFiscal || ""}</td><td>${c.nfDocumento || ""}</td><td>${c.extratoObrigatorio || ""}</td><td>${c.aceitaExtras || ""}</td><td>${c.portal || ""}</td><td>${c.finalCartao || ""}</td><td>${c.apelidoCartao || ""}</td><td>${c.tipoCartao || ""}</td><td>${c.obt || ""}</td><td class="obs-cell">${c.observacao || ""}</td>
     </tr>`).join("");
 }
 
@@ -366,6 +387,9 @@ window.editarCliente = function(id){
   $("clienteExtrato").value = c.extratoObrigatorio || "Sim";
   $("clienteExtras").value = c.aceitaExtras || "Sim";
   $("clientePortal").value = c.portal || "";
+  $("clienteFinalCartao").value = c.finalCartao || "";
+  $("clienteApelidoCartao").value = c.apelidoCartao || "";
+  $("clienteTipoCartao").value = c.tipoCartao || "Hotel";
   $("clienteObservacao").value = c.observacao || "";
   marcarObt(c.obt);
   window.scrollTo({top:0, behavior:"smooth"});
