@@ -53,7 +53,7 @@ button:hover{background:var(--azul-vivo);transform:translateY(-1px)}
 button:disabled{opacity:.65;cursor:not-allowed;transform:none}.btn-secundario{background:#e0f2fe!important;color:var(--azul-escuro)!important;border:1px solid var(--borda)!important}.btn-alerta{background:#fef3c7!important;color:#92400e!important;border:1px solid #fde68a!important}.btn-mini{width:auto;padding:8px 10px;font-size:12px;margin-right:6px}
 .acoes{display:flex;gap:10px;grid-column:1/-1;flex-wrap:wrap}.acoes button{width:auto;min-width:180px}
 .checks{display:flex;flex-direction:row;gap:14px;flex-wrap:wrap;padding:10px;border:1px solid var(--borda);border-radius:10px;background:#f8fbff}.checks label{display:flex;flex-direction:row;align-items:center;gap:6px;font-weight:normal;color:#334155}.checks input{width:auto}
-.erro{display:none;color:var(--erro);font-size:13px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:10px}.mensagem{display:none;border-radius:10px;padding:10px;margin-top:12px;font-size:13px}.mensagem.ok{color:var(--ok);background:#e0f2fe;border:1px solid #bae6fd}.mensagem.erro-msg{color:var(--erro);background:#fee2e2;border:1px solid #fecaca}.pagina{display:none}.pagina.ativa{display:block}.tabela-wrap{width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse;background:white;min-width:1500px}th,td{border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:13px;text-align:left;vertical-align:top}th{background:var(--azul-claro);color:var(--azul-escuro)}.campo-inativo{width:auto}.status-ativo{color:#15803d;font-weight:bold}.status-inativo{color:#b45309;font-weight:bold}.obs-cell{max-width:260px;white-space:normal}.barra-lista{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.carregando{font-size:13px;color:#64748b;margin:8px 0 0}
+.erro{display:none;color:var(--erro);font-size:13px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:10px}.mensagem{display:none;border-radius:10px;padding:10px;margin-top:12px;font-size:13px}.mensagem.ok{color:var(--ok);background:#e0f2fe;border:1px solid #bae6fd}.mensagem.erro-msg{color:var(--erro);background:#fee2e2;border:1px solid #fecaca}.pagina{display:none}.pagina.ativa{display:block}.tabela-wrap{width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse;background:white;min-width:1500px}th,td{border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:13px;text-align:left;vertical-align:top}th{background:var(--azul-claro);color:var(--azul-escuro)}.campo-inativo{width:auto}.status-ativo{color:#15803d;font-weight:bold}.status-inativo{color:#b45309;font-weight:bold}.obs-cell{max-width:260px;white-space:normal}.barra-lista{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.filtros-lista{display:grid;grid-template-columns:minmax(240px,1fr) auto auto;gap:10px;align-items:end;margin:10px 0 12px}.th-ordenavel{cursor:pointer;user-select:none}.th-ordenavel:hover{text-decoration:underline}@media(max-width:800px){.filtros-lista{grid-template-columns:1fr}.filtros-lista button{width:100%}}.carregando{font-size:13px;color:#64748b;margin:8px 0 0}
 .boas-vindas{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.menu-card{cursor:pointer;transition:.2s}.menu-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--sombra)}.menu-card h3{margin:0 0 8px;color:var(--azul-escuro)}.menu-card p{margin:0;color:#64748b;font-size:14px;line-height:1.4}
 @media(max-width:800px){.layout{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.content{padding:14px}.acoes{flex-direction:column}.acoes button{width:100%}table{min-width:1400px}}
 </style>
@@ -160,13 +160,19 @@ button:disabled{opacity:.65;cursor:not-allowed;transform:none}.btn-secundario{ba
         <div class="box">
           <div class="barra-lista">
             <h2>Clientes Cadastrados</h2>
-            <button type="button" class="btn-secundario btn-mini" onclick="carregarClientes()">Atualizar Lista</button>
+          </div>
+          <div class="filtros-lista">
+            <label>Pesquisar Cliente
+              <input id="filtroClientes" placeholder="Nome, CNPJ/CPF, grupo, responsável, apelido ou final do cartão" oninput="renderClientes()" />
+            </label>
+            <button type="button" class="btn-secundario" onclick="carregarClientes()">Atualizar Lista</button>
+            <button type="button" class="btn-secundario" onclick="exportarClientesCSV()">Exportar Clientes</button>
           </div>
           <div id="statusClientes" class="carregando"></div>
           <div class="tabela-wrap">
             <table>
               <thead>
-                <tr><th>Inativo?</th><th>Status</th><th>Ações</th><th>Nome</th><th>CNPJ/CPF</th><th>Grupo</th><th>BKO Cliente</th><th>BKO Grupo</th><th>Responsável</th><th>E-mail Responsável</th><th>CS Agencia</th><th>Corte</th><th>VCN</th><th>Nota Fiscal</th><th>NF no</th><th>Extrato</th><th>Extras</th><th>Cobra FEE?</th><th>Valor do FEE</th><th>Portal</th><th>Final Cartão</th><th>Apelido Cartão</th><th>Tipo Cartão</th><th>OBT</th><th>Observação</th></tr>
+                <tr><th>Inativo?</th><th class="th-ordenavel" onclick="ordenarClientes('inativo')">Status ↕</th><th>Ações</th><th class="th-ordenavel" onclick="ordenarClientes('nomeCliente')">Nome ↕</th><th class="th-ordenavel" onclick="ordenarClientes('cnpjCpf')">CNPJ/CPF ↕</th><th class="th-ordenavel" onclick="ordenarClientes('grupo')">Grupo ↕</th><th>BKO Cliente</th><th>BKO Grupo</th><th class="th-ordenavel" onclick="ordenarClientes('responsavelCliente')">Responsável ↕</th><th>E-mail Responsável</th><th>CS Agencia</th><th class="th-ordenavel" onclick="ordenarClientes('dataCorte')">Corte ↕</th><th>VCN</th><th>Nota Fiscal</th><th>NF no</th><th>Extrato</th><th>Extras</th><th class="th-ordenavel" onclick="ordenarClientes('cobraFee')">Cobra FEE? ↕</th><th>Valor do FEE</th><th>Portal</th><th class="th-ordenavel" onclick="ordenarClientes('finalCartao')">Final Cartão ↕</th><th class="th-ordenavel" onclick="ordenarClientes('apelidoCartao')">Apelido Cartão ↕</th><th>Tipo Cartão</th><th>OBT</th><th>Observação</th></tr>
               </thead>
               <tbody id="listaClientes"></tbody>
             </table>
@@ -191,12 +197,18 @@ button:disabled{opacity:.65;cursor:not-allowed;transform:none}.btn-secundario{ba
         <div class="box">
           <div class="barra-lista">
             <h2>Colaboradores Cadastrados</h2>
-            <button type="button" class="btn-secundario btn-mini" onclick="carregarColaboradores()">Atualizar Lista</button>
+          </div>
+          <div class="filtros-lista">
+            <label>Pesquisar Colaborador
+              <input id="filtroColaboradores" placeholder="Nome ou e-mail" oninput="renderColaboradores()" />
+            </label>
+            <button type="button" class="btn-secundario" onclick="carregarColaboradores()">Atualizar Lista</button>
+            <button type="button" class="btn-secundario" onclick="exportarColaboradoresCSV()">Exportar Colaboradores</button>
           </div>
           <div id="statusColaboradores" class="carregando"></div>
           <div class="tabela-wrap">
             <table style="min-width:760px">
-              <thead><tr><th>Inativo?</th><th>Status</th><th>Ações</th><th>Nome</th><th>E-mail</th></tr></thead>
+              <thead><tr><th>Inativo?</th><th class="th-ordenavel" onclick="ordenarColaboradores('inativo')">Status ↕</th><th>Ações</th><th class="th-ordenavel" onclick="ordenarColaboradores('nome')">Nome ↕</th><th class="th-ordenavel" onclick="ordenarColaboradores('email')">E-mail ↕</th></tr></thead>
               <tbody id="listaColaboradores"></tbody>
             </table>
           </div>
@@ -228,6 +240,8 @@ let clientes = [];
 let colaboradores = [];
 let clienteEditandoId = null;
 let colaboradorEditandoId = null;
+let ordemClientes = { campo: "nomeCliente", direcao: "asc" };
+let ordemColaboradores = { campo: "nome", direcao: "asc" };
 
 const $ = id => document.getElementById(id);
 
@@ -362,21 +376,64 @@ window.carregarClientes = async function(){
     const res = await api("listarClientes");
     clientes = res.clientes || [];
     renderClientes();
-    $("statusClientes").textContent = clientes.length ? `${clientes.length} cliente(s) cadastrado(s).` : "Nenhum cliente cadastrado.";
   }catch(err){
     $("statusClientes").textContent = err.message;
   }
 };
 
-function renderClientes(){
-  $("listaClientes").innerHTML = clientes.map(c => `
+function normalizarTexto(valor){
+  return String(valor || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function compararValores(a, b){
+  const na = Number(String(a ?? "").replace(",", "."));
+  const nb = Number(String(b ?? "").replace(",", "."));
+  if(!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+  return normalizarTexto(a).localeCompare(normalizarTexto(b), "pt-BR");
+}
+
+function obterClientesFiltradosOrdenados(){
+  const termo = normalizarTexto($("filtroClientes")?.value || "");
+  let lista = [...clientes];
+
+  if(termo){
+    lista = lista.filter(c => normalizarTexto([
+      c.nomeCliente, c.cnpjCpf, c.grupo, c.responsavelCliente,
+      c.apelidoCartao, c.finalCartao, c.portal, c.csAgencia
+    ].join(" ")).includes(termo));
+  }
+
+  lista.sort((a, b) => {
+    const resultado = compararValores(a[ordemClientes.campo], b[ordemClientes.campo]);
+    return ordemClientes.direcao === "asc" ? resultado : -resultado;
+  });
+
+  return lista;
+}
+
+window.ordenarClientes = function(campo){
+  if(ordemClientes.campo === campo){
+    ordemClientes.direcao = ordemClientes.direcao === "asc" ? "desc" : "asc";
+  }else{
+    ordemClientes = { campo, direcao: "asc" };
+  }
+  renderClientes();
+};
+
+window.renderClientes = function(){
+  const lista = obterClientesFiltradosOrdenados();
+  $("listaClientes").innerHTML = lista.map(c => `
     <tr>
       <td><input class="campo-inativo" type="checkbox" ${c.inativo === "Sim" ? "checked" : ""} onchange="alterarInativoCliente('${c.id}', this.checked)" /></td>
       <td class="${c.inativo === "Sim" ? "status-inativo" : "status-ativo"}">${c.inativo === "Sim" ? "Inativo" : "Ativo"}</td>
       <td><button class="btn-mini" type="button" onclick="editarCliente('${c.id}')">Editar</button></td>
       <td>${c.nomeCliente || ""}</td><td>${c.cnpjCpf || ""}</td><td>${c.grupo || ""}</td><td>${c.bkoCliente || ""}</td><td>${c.bkoGrupo || ""}</td><td>${c.responsavelCliente || ""}</td><td>${c.emailResponsavelCliente || ""}</td><td>${c.csAgencia || ""}</td><td>${c.dataCorte || ""}</td><td>${c.vcn || ""}</td><td>${c.notaFiscal || ""}</td><td>${c.nfDocumento || ""}</td><td>${c.extratoObrigatorio || ""}</td><td>${c.aceitaExtras || ""}</td><td>${c.cobraFee || ""}</td><td>${c.valorFee || ""}</td><td>${c.portal || ""}</td><td>${c.finalCartao || ""}</td><td>${c.apelidoCartao || ""}</td><td>${c.tipoCartao || ""}</td><td>${c.obt || ""}</td><td class="obs-cell">${c.observacao || ""}</td>
-    </tr>`).join("");
-}
+    </tr>`).join("") || `<tr><td colspan="25">Nenhum cliente encontrado.</td></tr>`;
+
+  $("statusClientes").textContent = clientes.length
+    ? `${lista.length} de ${clientes.length} cliente(s) exibido(s).`
+    : "Nenhum cliente cadastrado.";
+};
 
 window.editarCliente = function(id){
   const c = clientes.find(x => String(x.id) === String(id));
@@ -457,18 +514,47 @@ window.carregarColaboradores = async function(){
     const res = await api("listarColaboradores");
     colaboradores = res.colaboradores || [];
     renderColaboradores();
-    $("statusColaboradores").textContent = colaboradores.length ? `${colaboradores.length} colaborador(es) cadastrado(s).` : "Nenhum colaborador cadastrado.";
   }catch(err){ $("statusColaboradores").textContent = err.message; }
 };
-function renderColaboradores(){
-  $("listaColaboradores").innerHTML = colaboradores.map(c => `
+function obterColaboradoresFiltradosOrdenados(){
+  const termo = normalizarTexto($("filtroColaboradores")?.value || "");
+  let lista = [...colaboradores];
+
+  if(termo){
+    lista = lista.filter(c => normalizarTexto([c.nome, c.email].join(" ")).includes(termo));
+  }
+
+  lista.sort((a, b) => {
+    const resultado = compararValores(a[ordemColaboradores.campo], b[ordemColaboradores.campo]);
+    return ordemColaboradores.direcao === "asc" ? resultado : -resultado;
+  });
+
+  return lista;
+}
+
+window.ordenarColaboradores = function(campo){
+  if(ordemColaboradores.campo === campo){
+    ordemColaboradores.direcao = ordemColaboradores.direcao === "asc" ? "desc" : "asc";
+  }else{
+    ordemColaboradores = { campo, direcao: "asc" };
+  }
+  renderColaboradores();
+};
+
+window.renderColaboradores = function(){
+  const lista = obterColaboradoresFiltradosOrdenados();
+  $("listaColaboradores").innerHTML = lista.map(c => `
     <tr>
       <td><input class="campo-inativo" type="checkbox" ${c.inativo === "Sim" ? "checked" : ""} onchange="alterarInativoColaborador('${c.id}', this.checked)" /></td>
       <td class="${c.inativo === "Sim" ? "status-inativo" : "status-ativo"}">${c.inativo === "Sim" ? "Inativo" : "Ativo"}</td>
       <td><button class="btn-mini" type="button" onclick="editarColaborador('${c.id}')">Editar</button></td>
       <td>${c.nome || ""}</td><td>${c.email || ""}</td>
-    </tr>`).join("");
-}
+    </tr>`).join("") || `<tr><td colspan="5">Nenhum colaborador encontrado.</td></tr>`;
+
+  $("statusColaboradores").textContent = colaboradores.length
+    ? `${lista.length} de ${colaboradores.length} colaborador(es) exibido(s).`
+    : "Nenhum colaborador cadastrado.";
+};
 window.editarColaborador = function(id){
   const c = colaboradores.find(x => String(x.id) === String(id));
   if(!c) return;
@@ -496,6 +582,37 @@ window.alterarInativoColaborador = async function(id, marcado){
     await carregarColaboradores();
   }catch(err){ alert(err.message); }
 };
+function valorCSV(valor){
+  const texto = String(valor ?? "");
+  return `"${texto.replace(/"/g, '""')}"`;
+}
+
+function baixarCSV(nomeArquivo, cabecalho, linhas){
+  const conteudo = [cabecalho, ...linhas].map(linha => linha.map(valorCSV).join(";")).join("\n");
+  const blob = new Blob(["\ufeff" + conteudo], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = nomeArquivo;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+window.exportarClientesCSV = function(){
+  const lista = obterClientesFiltradosOrdenados();
+  const cabecalho = ["Status", "Nome", "CNPJ/CPF", "Grupo", "BKO Cliente", "BKO Grupo", "Responsavel Cliente", "Email Responsavel", "CS Agencia", "Data Corte", "VCN", "Nota Fiscal", "NF Documento", "Extrato Obrigatorio", "Aceita Extras", "Cobra FEE", "Valor FEE", "Portal", "Final Cartao", "Apelido Cartao", "Tipo Cartao", "OBT", "Observacao"];
+  const linhas = lista.map(c => [
+    c.inativo === "Sim" ? "Inativo" : "Ativo", c.nomeCliente, c.cnpjCpf, c.grupo, c.bkoCliente, c.bkoGrupo, c.responsavelCliente, c.emailResponsavelCliente, c.csAgencia, c.dataCorte, c.vcn, c.notaFiscal, c.nfDocumento, c.extratoObrigatorio, c.aceitaExtras, c.cobraFee, c.valorFee, c.portal, c.finalCartao, c.apelidoCartao, c.tipoCartao, c.obt, c.observacao
+  ]);
+  baixarCSV("clientes_conciliacao_cartao.csv", cabecalho, linhas);
+};
+
+window.exportarColaboradoresCSV = function(){
+  const lista = obterColaboradoresFiltradosOrdenados();
+  const cabecalho = ["Status", "Nome", "Email"];
+  const linhas = lista.map(c => [c.inativo === "Sim" ? "Inativo" : "Ativo", c.nome, c.email]);
+  baixarCSV("colaboradores_conciliacao_cartao.csv", cabecalho, linhas);
+};
+
 </script>
 </body>
 </html>
