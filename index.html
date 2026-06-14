@@ -96,8 +96,8 @@ window.salvarEntregaLinha=async function(idCliente){
     if(!res || !res.sucesso)throw new Error((res&&res.mensagem)||"Erro ao salvar entrega.");
 
     const entregaSalva=res.entrega||{...entrega,id:res.id||entrega.id};
-    const idx=entregas.findIndex(e=>String(e.mes)===String(entregaSalva.mes)&&String(e.idCliente)===String(entregaSalva.idCliente));
-    if(idx>=0)entregas[idx]=entregaSalva;else entregas.push(entregaSalva);
+    const idxSalva=entregas.findIndex(e=>String(e.mes)===String(entregaSalva.mes)&&String(e.idCliente)===String(entregaSalva.idCliente));
+    if(idxSalva>=0)entregas[idxSalva]=entregaSalva;else entregas.push(entregaSalva);
 
     entregasEditando.delete(String(idCliente));
     await carregarEntregas();
