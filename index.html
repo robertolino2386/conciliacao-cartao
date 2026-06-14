@@ -52,7 +52,7 @@ function entregaVazia(){return {id:"",mes:"",idCliente:"",cliente:"",grupo:"",fi
 function obterEntrega(mes,idCliente){return entregas.find(e=>String(e.mes)===String(mes)&&String(e.idCliente)===String(idCliente))||entregaVazia()}
 function montarEntregaCompleta(idCliente,base={}){const mes=$("controleMes")?.value||"Jan/2026";const c=clientes.find(x=>String(x.id)===String(idCliente))||{};const idCol=base.idColaborador||base.colaboradorId||"";const col=colaboradores.find(x=>String(x.id)===String(idCol));return {id:base.id||"",mes,idCliente:String(idCliente||""),cliente:c.nomeCliente||base.cliente||"",grupo:c.grupo||base.grupo||"",finalCartao:c.finalCartao||base.finalCartao||"",apelidoCartao:c.apelidoCartao||base.apelidoCartao||"",idColaborador:idCol,colaborador:col?.nome||base.colaborador||"",dataFechamento:base.dataFechamento||"",dataEntrega:base.dataEntrega||"",qtdTransacoes:base.qtdTransacoes||"",qtdConciliada:base.qtdConciliada||"",qtdNotas:base.qtdNotas||"",valorFatura:base.valorFatura||"",finalizado:base.finalizado||"Não"}}
 window.carregarEntregas=async function(){try{const res=await api("listarEntregas");entregas=res.entregas||[];renderStatusControle();renderRelatorios();return entregas}catch(err){if($("statusControle"))$("statusControle").textContent="Erro ao carregar entregas: "+err.message;return []}}
-async function salvarEntrega(idCliente,campo,valor){const mes=$("controleMes").value;let idx=entregas.findIndex(e=>String(e.mes)===String(mes)&&String(e.idCliente)===String(idCliente));let atual=idx>=0?{...entregas[idx]}:montarEntregaCompleta(idCliente,{mes,idCliente});if(campo==="colaboradorId"){atual.idColaborador=valor;atual.colaboradorId=valor;const col=colaboradores.find(x=>String(x.id)===String(valor));atual.colaborador=col?.nome||""}else{atual[campo]=valor}atual=montarEntregaCompleta(idCliente,{...atual,mes,idCliente});if(idx>=0)entregas[idx]=atual;else entregas.push(atual);if($('relatorioMes'))$('relatorioMes').value=mes;renderStatusControle();renderRelatorios();try{const res=await api("salvarEntrega",atual);if(!res.sucesso)throw new Error(res.mensagem||"Erro ao salvar entrega.");await carregarEntregas()}catch(err){alert("Não foi possível salvar a entrega no Google Sheets: "+err.message)}}
+async function salvarEntrega(idCliente,campo,valor){const mes=$("controleMes").value;let idx=entregas.findIndex(e=>String(e.mes)===String(mes)&&String(e.idCliente)===String(idCliente));let atual=idx>=0?{...entregas[idx]}:montarEntregaCompleta(idCliente,{mes,idCliente});if(campo==="colaboradorId"){atual.idColaborador=valor;atual.colaboradorId=valor;const col=colaboradores.find(x=>String(x.id)===String(valor));atual.colaborador=col?.nome||""}else{atual[campo]=valor}atual=montarEntregaCompleta(idCliente,{...atual,mes,idCliente});if(idx>=0)entregas[idx]=atual;else entregas.push(atual);if($('relatorioMes'))$('relatorioMes').value=mes;renderStatusControle();renderRelatorios();try{const res=await api("salvarEntrega",atual);if(!res.sucesso)throw new Error(res.mensagem||"Erro ao salvar entrega.");await carregarEntregas()}catch(err){alert("Não foi possível salvar a entrega no Google Sheets: "+err.message+"\n\nConfira se você publicou uma nova versão do Apps Script.")}}
 window.salvarEntrega=salvarEntrega;
 $("controleMes").addEventListener("change",async()=>{if($('relatorioMes'))$('relatorioMes').value=$('controleMes').value;await carregarEntregas();renderControleEntregas();renderRelatorios()});
 $("buscaControle").addEventListener("input",renderControleEntregas);
@@ -95,10 +95,13 @@ window.salvarEntregaLinha=async function(idCliente){
     const res=await api("salvarEntrega",entrega);
     if(!res || !res.sucesso)throw new Error((res&&res.mensagem)||"Erro ao salvar entrega.");
 
+    const entregaSalva=res.entrega||{...entrega,id:res.id||entrega.id};
+    const idx=entregas.findIndex(e=>String(e.mes)===String(entregaSalva.mes)&&String(e.idCliente)===String(entregaSalva.idCliente));
+    if(idx>=0)entregas[idx]=entregaSalva;else entregas.push(entregaSalva);
+
     entregasEditando.delete(String(idCliente));
-    bloquearLinhaEntrega(idCliente,true);
-    atualizarBotoesLinha(idCliente,true);
-    renderStatusControle();
+    await carregarEntregas();
+    renderControleEntregas();
     renderRelatorios();
 
     if(botao){botao.textContent="Salvo";setTimeout(()=>{botao.textContent="Salvar";},1200);}
