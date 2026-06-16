@@ -168,7 +168,23 @@ window.renderRelatorios=renderRelatorios;
 
 function dataLocalHoje(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
 function formatarDataBR(data){return String(data.getDate()).padStart(2,"0")+"/"+String(data.getMonth()+1).padStart(2,"0")+"/"+data.getFullYear()}
+function mesSelecionadoControle(){return $("controleMes")?.value||""}
+function dadosMesSelecionado(mesTexto){
+  const mapa={"Jan":0,"Fev":1,"Mar":2,"Abr":3,"Mai":4,"Jun":5,"Jul":6,"Ago":7,"Set":8,"Out":9,"Nov":10,"Dez":11};
+  const partes=String(mesTexto||"").split("/");
+  const mes=mapa[partes[0]];
+  const ano=parseInt(partes[1],10);
+  if(mes===undefined||!ano)return null;
+  return {mes,ano};
+}
+function mesControleEhMesAtual(){
+  const hoje=dataLocalHoje();
+  const selecionado=dadosMesSelecionado(mesSelecionadoControle());
+  if(!selecionado)return false;
+  return selecionado.mes===hoje.getMonth()&&selecionado.ano===hoje.getFullYear();
+}
 function proximoFechamentoCliente(cliente){
+  if(!mesControleEhMesAtual())return null;
   const corte=parseInt(String(cliente.dataCorte||"").replace(/\D/g,""),10);
   if(!corte)return null;
   const hoje=dataLocalHoje();
@@ -180,10 +196,19 @@ function proximoFechamentoCliente(cliente){
   return {data:fechamento,dias:diff};
 }
 window.abrirModalFechamentos=function(){
-  const itens=clientesAtivos().map(c=>({cliente:c,fechamento:proximoFechamentoCliente(c)})).filter(x=>x.fechamento).sort((a,b)=>a.fechamento.data-b.fechamento.data||String(a.cliente.nomeCliente||"").localeCompare(String(b.cliente.nomeCliente||""),"pt-BR"));
   const hoje=dataLocalHoje();
   const limite=new Date(hoje);limite.setDate(limite.getDate()+5);
-  $("modalFechamentosSub").textContent=`Período: ${formatarDataBR(hoje)} até ${formatarDataBR(limite)}. ${itens.length} cliente(s) encontrado(s).`;
+  const mesSelecionado=mesSelecionadoControle();
+
+  if(!mesControleEhMesAtual()){
+    $("modalFechamentosSub").textContent=`Mês selecionado: ${mesSelecionado}. Os fechamentos aparecem somente no mês atual (${meses[hoje.getMonth()]}/${hoje.getFullYear()}).`;
+    $("listaFechamentos").innerHTML=`<tr><td colspan="7">Nenhum fechamento exibido, pois o filtro está em ${esc(mesSelecionado)} e o mês atual é ${esc(meses[hoje.getMonth()]+"/"+hoje.getFullYear())}.</td></tr>`;
+    $("modalFechamentos").classList.add("ativa");
+    return;
+  }
+
+  const itens=clientesAtivos().map(c=>({cliente:c,fechamento:proximoFechamentoCliente(c)})).filter(x=>x.fechamento).sort((a,b)=>a.fechamento.data-b.fechamento.data||String(a.cliente.nomeCliente||"").localeCompare(String(b.cliente.nomeCliente||""),"pt-BR"));
+  $("modalFechamentosSub").textContent=`Mês selecionado: ${mesSelecionado}. Período: ${formatarDataBR(hoje)} até ${formatarDataBR(limite)}. ${itens.length} cliente(s) encontrado(s).`;
   $("listaFechamentos").innerHTML=itens.map(({cliente:c,fechamento:f})=>`<tr><td>${esc(c.nomeCliente)}</td><td>${esc(c.grupo)}</td><td>${esc(c.finalCartao)}</td><td>${esc(c.apelidoCartao)}</td><td>Dia ${esc(c.dataCorte)}</td><td>${formatarDataBR(f.data)}</td><td><span class="badge-dias ${f.dias===0?"badge-hoje":""}">${f.dias===0?"Hoje":f.dias+" dia(s)"}</span></td></tr>`).join("")||`<tr><td colspan="7">Nenhum cliente com fechamento nos próximos 5 dias.</td></tr>`;
   $("modalFechamentos").classList.add("ativa");
 };
